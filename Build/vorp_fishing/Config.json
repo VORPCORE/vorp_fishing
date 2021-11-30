@@ -1,0 +1,27 @@
+{
+  "defaultlang": "En",
+
+  "UsableBaits": [
+    {
+      "Name": "p_baitBread01x"
+    },
+    {
+      "Name": "p_baitCorn01x"
+    },
+    {
+      "Name": "p_baitCheese01x"
+    },
+    {
+      "Name": "p_finishedragonfly01x"
+    },
+    {
+      "Name": "p_baitCricket01x"
+    },
+    {
+      "Name": "p_FinisdFishlure01x"
+    },
+    {
+      "Name": "p_finishdcrawd01x"
+    }
+  ]
+}
