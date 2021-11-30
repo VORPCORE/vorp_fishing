@@ -101,6 +101,8 @@ namespace vorp_fishing
 				SetFishTaskState(data);
 				Function.Call((Hash)0x8A0FB4D03A630D21, ResetCastPrompt, 0);
 				Function.Call((Hash)0x71215ACCFDE075EE, ResetCastPrompt, 0);
+				Function.Call((Hash)0x8A0FB4D03A630D21, ReelInPrompt, 0);
+				Function.Call((Hash)0x71215ACCFDE075EE, ReelInPrompt, 0);
 				Function.Call((Hash)0x8A0FB4D03A630D21, HookPrompt, 0);
 				Function.Call((Hash)0x71215ACCFDE075EE, HookPrompt, 0);
 				if (this.FishingState_ == 7)
@@ -227,6 +229,8 @@ namespace vorp_fishing
 				float distance_van = API.Vdist(bobberCoords.X, bobberCoords.Y, bobberCoords.Z, 3154.16f, 572.1613f, 42.0f);
 				if (distance_van > 750.0f)
 				{
+					Function.Call((Hash)0x8A0FB4D03A630D21, ReelInPrompt, 1);
+					Function.Call((Hash)0x71215ACCFDE075EE, ReelInPrompt, 1);
 					Function.Call((Hash)0x71215ACCFDE075EE, HookPrompt, 1);
 					int gametimer = API.GetGameTimer();
 					if (this.FindFishTimer < gametimer && this.TargetFish == 0)
@@ -633,12 +637,12 @@ namespace vorp_fishing
 		private void RemoveBait()
 		{
 			string baitName = Enum.GetName(typeof(FishBait), this.CurrentBait);
-			if (baitName == "p_baitBread01x" || baitName == "p_baitCorn01x" || baitName == "p_baitBread01x" || baitName == "p_baitCheese01x" || baitName == "p_baitWorm01x" || baitName == "p_baitWorm01x")
-			{
+			//if (baitName == "p_baitBread01x" || baitName == "p_baitCorn01x" || baitName == "p_baitBread01x" || baitName == "p_baitCheese01x" || baitName == "p_baitWorm01x" || baitName == "p_baitWorm01x")
+			//{
 				Function.Call((Hash)0x9B0C7FA063E67629, API.PlayerPedId(), 0, 0, 1);
 				this.CurrentBait = (FishBait)1;
 
-			}
+			//}
 		}
 		private async Task PlayPtfx()
 		{
@@ -709,6 +713,8 @@ namespace vorp_fishing
 			Function.Call((Hash)0x71215ACCFDE075EE, HookPrompt, 0);
 			Function.Call((Hash)0xCC6656799977741B, HookPrompt, 1);
 			Function.Call((Hash)0xF7AA2696A22AD8B9, HookPrompt);
+
+
 
 		}
 
