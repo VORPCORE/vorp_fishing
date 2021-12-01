@@ -16,9 +16,14 @@ namespace vorp_fishing
 
 		private static int ResetCastPrompt = -1;
 		private static int ReelInPrompt = -1;
+		private static int ReelLurePrompt = -1;
+		private static int ReelLurePlusPrompt = -1;
+		private static int ReelLureMinusPrompt = -1;
 		private static int KeepPrompt = -1;
 		private static int ThrowFishBackPrompt = -1;
 		private static int HookPrompt = -1;
+		private static float[] reelSpeeds = { 0.0125f, 0.0375f };
+		private static float actualReelSpeed = 0.075f;
 		public int TargetFish { get; set; }
 		public int FishingState_ { get; set; }
 		public bool Hooked { get; set; }
@@ -84,6 +89,7 @@ namespace vorp_fishing
 
 
 		};
+
 		private async Task FishingCore()
 		{
 			bool ResetCast = Function.Call<bool>((Hash)0x21E60E230086697F, ResetCastPrompt);
@@ -101,6 +107,14 @@ namespace vorp_fishing
 				SetFishTaskState(data);
 				Function.Call((Hash)0x8A0FB4D03A630D21, ResetCastPrompt, 0);
 				Function.Call((Hash)0x71215ACCFDE075EE, ResetCastPrompt, 0);
+				Function.Call((Hash)0x8A0FB4D03A630D21, ReelInPrompt, 0);
+				Function.Call((Hash)0x71215ACCFDE075EE, ReelInPrompt, 0);
+				Function.Call((Hash)0x8A0FB4D03A630D21, ReelLurePrompt, 0);
+				Function.Call((Hash)0x71215ACCFDE075EE, ReelLurePrompt, 0);
+				Function.Call((Hash)0x8A0FB4D03A630D21, ReelLurePlusPrompt, 0);
+				Function.Call((Hash)0x71215ACCFDE075EE, ReelLurePlusPrompt, 0);
+				Function.Call((Hash)0x8A0FB4D03A630D21, ReelLureMinusPrompt, 0);
+				Function.Call((Hash)0x71215ACCFDE075EE, ReelLureMinusPrompt, 0);
 				Function.Call((Hash)0x8A0FB4D03A630D21, HookPrompt, 0);
 				Function.Call((Hash)0x71215ACCFDE075EE, HookPrompt, 0);
 				if (this.FishingState_ == 7)
@@ -135,6 +149,12 @@ namespace vorp_fishing
 			{
 				Function.Call((Hash)0x8A0FB4D03A630D21, ResetCastPrompt, 0);
 				Function.Call((Hash)0x71215ACCFDE075EE, ResetCastPrompt, 0);
+				Function.Call((Hash)0x8A0FB4D03A630D21, ReelLurePrompt, 0);
+				Function.Call((Hash)0x71215ACCFDE075EE, ReelLurePrompt, 0);
+				Function.Call((Hash)0x8A0FB4D03A630D21, ReelLurePlusPrompt, 0);
+				Function.Call((Hash)0x71215ACCFDE075EE, ReelLurePlusPrompt, 0);
+				Function.Call((Hash)0x8A0FB4D03A630D21, ReelLureMinusPrompt, 0);
+				Function.Call((Hash)0x71215ACCFDE075EE, ReelLureMinusPrompt, 0);
 				this.Hooked = false;
 
 			}
@@ -222,11 +242,60 @@ namespace vorp_fishing
 
 			if (this.FishingState_ == 6)
 			{
+				Vector3 playerCoords = API.GetEntityCoords(API.PlayerPedId(), true, true);
+				Vector3 hookCoords = API.GetEntityCoords(data.HookHandle, true, true);
+
+				Vector3 dest = playerCoords - hookCoords;
+				Vector3.Normalize(ref dest, out dest);
+
+				Function.Call((Hash)0x8A0FB4D03A630D21, ReelLurePrompt, 1);
+				Function.Call((Hash)0x71215ACCFDE075EE, ReelLurePrompt, 1);
+
+				Function.Call((Hash)0x8A0FB4D03A630D21, ReelLurePlusPrompt, 0);
+				Function.Call((Hash)0x71215ACCFDE075EE, ReelLurePlusPrompt, 0);
+
+				Function.Call((Hash)0x8A0FB4D03A630D21, ReelLureMinusPrompt, 0);
+				Function.Call((Hash)0x71215ACCFDE075EE, ReelLureMinusPrompt, 0);
+
+
+				if (API.IsControlPressed(0, 0xDE794E3E)) // Q
+				{
+					Function.Call((Hash)0x8A0FB4D03A630D21, ReelLurePlusPrompt, 1);
+					Function.Call((Hash)0x71215ACCFDE075EE, ReelLurePlusPrompt, 1);
+
+					Function.Call((Hash)0x8A0FB4D03A630D21, ReelLureMinusPrompt, 1);
+					Function.Call((Hash)0x71215ACCFDE075EE, ReelLureMinusPrompt, 1);
+
+					//+ Speed
+					if (API.IsControlPressed(0, 0xE30CD707)) // R
+					{
+						if (actualReelSpeed < reelSpeeds[1])
+						{
+							actualReelSpeed = Math.Min(reelSpeeds[1], actualReelSpeed + 0.0025f);
+						}
+					}
+					//- Speed
+					if (API.IsControlPressed(0, 0x760A9C6F)) //G
+					{
+						if (actualReelSpeed > reelSpeeds[0])
+						{
+							actualReelSpeed = Math.Max(reelSpeeds[1], actualReelSpeed - 0.0025f);
+						}
+					}
+
+				
+					dest = hookCoords + dest * actualReelSpeed;
+					API.SetEntityCoords(data.HookHandle, dest.X, dest.Y, dest.Z, false, false, false, false);
+
+				}
+
+
 				var bobberCoords = API.GetEntityCoords(data.BobberHandle, true, true);
 				var _bobberCoords = API.GetEntityCoords(data.BobberHandle, true, true);
 				float distance_van = API.Vdist(bobberCoords.X, bobberCoords.Y, bobberCoords.Z, 3154.16f, 572.1613f, 42.0f);
 				if (distance_van > 750.0f)
 				{
+
 					Function.Call((Hash)0x71215ACCFDE075EE, HookPrompt, 1);
 					int gametimer = API.GetGameTimer();
 					if (this.FindFishTimer < gametimer && this.TargetFish == 0)
@@ -267,6 +336,7 @@ namespace vorp_fishing
 							await BaseScript.Delay(10);
 							fishCoords = API.GetEntityCoords(this.TargetFish, true, true);
 							bobberCoords = API.GetEntityCoords(data.BobberHandle, true, true);
+							//API.PlaySoundFrontend("collectible_found", "RDRO_Collectible_Sounds_Travelling_Saleswoman", true, 0);
 							Function.Call((Hash)0x8A0FB4D03A630D21, HookPrompt, 1);
 							bool hookclick = Function.Call<bool>((Hash)0x21E60E230086697F, HookPrompt);
 							data = GetFishTaskState();
@@ -274,6 +344,8 @@ namespace vorp_fishing
 							if (hookclick && !this.Hooked)
 							{
 								this.Hooked = true;
+								Function.Call((Hash)0x8A0FB4D03A630D21, ReelLurePrompt, 0);
+								Function.Call((Hash)0x71215ACCFDE075EE, ReelLurePrompt, 0);
 								API.SetBlockingOfNonTemporaryEvents(this.TargetFish, true);
 								Function.Call((Hash)0x1A52076D26E09004, API.PlayerPedId(), this.TargetFish);
 								data.FishHandle = this.TargetFish;
@@ -285,7 +357,7 @@ namespace vorp_fishing
 								SetFishTaskState(data);
 
 							}
-
+							
 						}
 						Function.Call((Hash)0x8A0FB4D03A630D21, HookPrompt, 0);
 						if (!this.Hooked && this.TargetFish > 0)
@@ -306,6 +378,8 @@ namespace vorp_fishing
 
 			if (this.FishingState_ == 7)
 			{
+				Function.Call((Hash)0x8A0FB4D03A630D21, ReelLurePrompt, 0);
+				Function.Call((Hash)0x71215ACCFDE075EE, ReelLurePrompt, 0);
 				Random rng = new Random();
 				bool randomBool = rng.Next(2) == 1;
 				bool reelIn = API.IsControlPressed(2, 0x8FFC75D6);
@@ -633,12 +707,12 @@ namespace vorp_fishing
 		private void RemoveBait()
 		{
 			string baitName = Enum.GetName(typeof(FishBait), this.CurrentBait);
-			if (baitName == "p_baitBread01x" || baitName == "p_baitCorn01x" || baitName == "p_baitBread01x" || baitName == "p_baitCheese01x" || baitName == "p_baitWorm01x" || baitName == "p_baitWorm01x")
-			{
+			//if (baitName == "p_baitBread01x" || baitName == "p_baitCorn01x" || baitName == "p_baitBread01x" || baitName == "p_baitCheese01x" || baitName == "p_baitWorm01x" || baitName == "p_baitWorm01x")
+			//{
 				Function.Call((Hash)0x9B0C7FA063E67629, API.PlayerPedId(), 0, 0, 1);
 				this.CurrentBait = (FishBait)1;
 
-			}
+			//}
 		}
 		private async Task PlayPtfx()
 		{
@@ -681,6 +755,33 @@ namespace vorp_fishing
 			Function.Call((Hash)0xCC6656799977741B, ReelInPrompt, 1);
 			Function.Call((Hash)0xF7AA2696A22AD8B9, ReelInPrompt);
 
+			ReelLurePrompt = Function.Call<int>((Hash)0x04F97DE45A519419);
+			Function.Call((Hash)0xB5352B7494A08258, ReelLurePrompt, 0xDE794E3E);
+			long ReelLureStr = Function.Call<long>((Hash)0xFA925AC00EB830B9, 10, "LITERAL_STRING", GetConfig.Langs["ReelLure"]);
+			Function.Call((Hash)0x5DD02A8318420DD7, ReelLurePrompt, ReelLureStr);
+			Function.Call((Hash)0x8A0FB4D03A630D21, ReelLurePrompt, 0);
+			Function.Call((Hash)0x71215ACCFDE075EE, ReelLurePrompt, 0);
+			Function.Call((Hash)0xCC6656799977741B, ReelLurePrompt, 1);
+			Function.Call((Hash)0xF7AA2696A22AD8B9, ReelLurePrompt);
+
+			ReelLurePlusPrompt = Function.Call<int>((Hash)0x04F97DE45A519419);
+			Function.Call((Hash)0xB5352B7494A08258, ReelLurePlusPrompt, 0xE30CD707);
+			long ReelLurePlusStr = Function.Call<long>((Hash)0xFA925AC00EB830B9, 10, "LITERAL_STRING", GetConfig.Langs["ReelLureSpeedPlus"]);
+			Function.Call((Hash)0x5DD02A8318420DD7, ReelLurePlusPrompt, ReelLurePlusStr);
+			Function.Call((Hash)0x8A0FB4D03A630D21, ReelLurePlusPrompt, 0);
+			Function.Call((Hash)0x71215ACCFDE075EE, ReelLurePlusPrompt, 0);
+			Function.Call((Hash)0xCC6656799977741B, ReelLurePlusPrompt, 1);
+			Function.Call((Hash)0xF7AA2696A22AD8B9, ReelLurePlusPrompt);
+
+			ReelLureMinusPrompt = Function.Call<int>((Hash)0x04F97DE45A519419);
+			Function.Call((Hash)0xB5352B7494A08258, ReelLureMinusPrompt, 0x760A9C6F);
+			long ReelLureMinusStr = Function.Call<long>((Hash)0xFA925AC00EB830B9, 10, "LITERAL_STRING", GetConfig.Langs["ReelLureSpeedMinus"]);
+			Function.Call((Hash)0x5DD02A8318420DD7, ReelLureMinusPrompt, ReelLureMinusStr);
+			Function.Call((Hash)0x8A0FB4D03A630D21, ReelLureMinusPrompt, 0);
+			Function.Call((Hash)0x71215ACCFDE075EE, ReelLureMinusPrompt, 0);
+			Function.Call((Hash)0xCC6656799977741B, ReelLureMinusPrompt, 1);
+			Function.Call((Hash)0xF7AA2696A22AD8B9, ReelLureMinusPrompt);
+
 
 			KeepPrompt = Function.Call<int>((Hash)0x04F97DE45A519419);
 			Function.Call((Hash)0xB5352B7494A08258, KeepPrompt, 0xCEFD9220);
@@ -709,6 +810,11 @@ namespace vorp_fishing
 			Function.Call((Hash)0x71215ACCFDE075EE, HookPrompt, 0);
 			Function.Call((Hash)0xCC6656799977741B, HookPrompt, 1);
 			Function.Call((Hash)0xF7AA2696A22AD8B9, HookPrompt);
+
+
+
+
+
 
 		}
 

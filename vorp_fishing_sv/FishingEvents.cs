@@ -23,13 +23,6 @@ namespace vorp_fishing_sv
 
             EventHandlers["vorp_fishing:FishToInventory"] += new Action<Player, string>(FishToInventory);
             EventHandlers["vorp_fishing:baitUsed"] += new Action<Player, string>(BaitUsed);
-
-            //--------------------------------------------------------------------------------------//
-            //                                                                                      //
-            //  THIS IS A TEMPORARY FIX UNTIL WE SORT THE ISSUE OF THE CONFIG NOT LOADING PROPERLY  //
-            //                                                                                      //
-            //--------------------------------------------------------------------------------------//
-
             TriggerEvent("vorpCore:registerUsableItem", "p_baitBread01x", new Action<dynamic>((data) =>
             {
                 PlayerList pl = new PlayerList();
@@ -80,7 +73,34 @@ namespace vorp_fishing_sv
             }));
 
 
+
+
+
+
+
+
+            //RegisterUsableItems();
+
+
         }
+
+        /*public async Task RegisterUsableItems()
+        {
+            await Delay(3000);
+            Debug.WriteLine($"Vorp Fishing: Loading {LoadConfig.Config["UsableBaits"].Count().ToString()} items usables ");
+            for (int i = 0; i < LoadConfig.Config["UsableBaits"].Count(); i++)
+            {
+                int index = i;
+                TriggerEvent("vorpCore:registerUsableItem", LoadConfig.Config["UsableBaits"][i]["Name"].ToString(), new Action<dynamic>((data) =>
+                {
+                    PlayerList pl = new PlayerList();
+                    Player p = pl[data.source];
+                    p.TriggerEvent("vorp_fishing:UseBait", index, LoadConfig.Config["UsableBaits"][index]["Name"].ToString());
+                    //TriggerEvent("vorpCore:subItem", data.source, LoadConfig.Config["UsableBaits"][index]["Name"].ToString(), 1);
+                }));
+
+            }
+        }*/
 
         private void BaitUsed([FromSource] Player player, string baitname)
         {

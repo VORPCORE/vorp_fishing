@@ -5,6 +5,9 @@
   "Cancel": "Cancel",
   "SaveFish": "Keep",
   "ReelIn": "Reel In",
+  "ReelLure": "Reel Lure",
+  "ReelLureSpeedPlus": "Increase reel speed",
+  "ReelLureSpeedMinus": "Decrease reel speed",
   "FreeFish": "Free Fish",
-  "HookFish":  "Hook Fish"
+  "HookFish": "Hook Fish"
 }
