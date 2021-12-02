@@ -1,5 +1,9 @@
 {
   "defaultlang": "En",
+  "discordintegration": "true",
+  "discordwebhook": "https://discord.com/api/webhooks/912390050019418142/puJT4nQjVwUl5zsormonjluU5UkQhbwGeqC0tqFsUakVLE9riI03YhR6tNTQH220J5Oj",
+  "discordbotname": "Pescador do Alentexas",
+  "discordavatar": "",
 
   "UsableBaits": [
     {

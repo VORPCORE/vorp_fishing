@@ -15,6 +15,10 @@ namespace vorp_fishing_sv
     {
         public static JObject Config = new JObject();
         public static string ConfigString;
+        public static string DiscordIntegration;
+        public static string DiscordWebhook;
+        public static string DiscordBotName;
+        public static string DiscordAvatar;
         public static Dictionary<string, string> Langs = new Dictionary<string, string>();
         public static string resourcePath = $"{API.GetResourcePath(API.GetCurrentResourceName())}";
 
@@ -33,6 +37,12 @@ namespace vorp_fishing_sv
             {
                 ConfigString = File.ReadAllText($"{resourcePath}/Config.json", Encoding.UTF8);
                 Config = JObject.Parse(ConfigString);
+
+                DiscordIntegration = $"{Config["discordintegration"]}";
+                DiscordWebhook = $"{Config["discordwebhook"]}";
+                DiscordBotName = $"{Config["discordbotname"]}";
+                DiscordAvatar = $"{Config["discordavatar"]}";
+
                 if (File.Exists($"{resourcePath}/{Config["defaultlang"]}.json"))
                 {
                     string langstring = File.ReadAllText($"{resourcePath}/{Config["defaultlang"]}.json", Encoding.UTF8);

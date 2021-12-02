@@ -48,6 +48,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Discord\DiscordWebHook.cs" />
+    <Compile Include="Discord\Structs.cs" />
+    <Compile Include="Discord\Utils.cs" />
     <Compile Include="FishingEvents.cs" />
     <Compile Include="LoadConfig.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
