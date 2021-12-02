@@ -363,3 +363,5 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+Build/vorp_fishing.rar
+Build/vorp_fishing/client/vorp_fishing.net.dll
